@@ -3,9 +3,14 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TABLE IF NOT EXISTS users (
   id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   email         TEXT UNIQUE NOT NULL,
+  name          TEXT,
+  avatar_data_url TEXT,
   password_hash TEXT NOT NULL,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS name TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_data_url TEXT;
 
 CREATE TABLE IF NOT EXISTS sessions (
   id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -1,4 +1,6 @@
-@import "@fontsource-variable/geist";
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/500.css";
+@import "@fontsource/ibm-plex-sans/600.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,7 +11,7 @@
   }
 
   html {
-    font-family: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+    font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
   }
 
   body {

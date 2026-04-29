@@ -3,20 +3,62 @@ const { Pool } = require('pg');
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 // Users
-async function createUser(email, passwordHash) {
+async function ensureUserProfileColumns() {
+  await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS name TEXT');
+  await pool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_data_url TEXT');
+}
+
+async function createUser(name, email, passwordHash) {
   const { rows } = await pool.query(
-    'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email, created_at',
-    [email, passwordHash]
+    'INSERT INTO users (name, email, password_hash) VALUES ($1, $2, $3) RETURNING id, email, name, avatar_data_url, created_at',
+    [name, email, passwordHash]
   );
   return rows[0];
 }
 
 async function findUserByEmail(email) {
   const { rows } = await pool.query(
-    'SELECT id, email, password_hash, created_at FROM users WHERE email = $1',
+    'SELECT id, email, name, avatar_data_url, password_hash, created_at FROM users WHERE email = $1',
     [email]
   );
   return rows[0] ?? null;
+}
+
+async function findUserById(id) {
+  const { rows } = await pool.query(
+    'SELECT id, email, name, avatar_data_url, password_hash, created_at FROM users WHERE id = $1',
+    [id]
+  );
+  return rows[0] ?? null;
+}
+
+async function updateUserProfile(userId, name, email, avatarDataUrl) {
+  const { rows } = await pool.query(
+    `UPDATE users
+     SET name = $2,
+         email = $3,
+         avatar_data_url = $4
+     WHERE id = $1
+     RETURNING id, email, name, avatar_data_url, created_at`,
+    [userId, name, email, avatarDataUrl]
+  );
+  return rows[0] ?? null;
+}
+
+async function updateUserPassword(userId, passwordHash) {
+  const { rows } = await pool.query(
+    `UPDATE users
+     SET password_hash = $2
+     WHERE id = $1
+     RETURNING id`,
+    [userId, passwordHash]
+  );
+  return rows[0] ?? null;
+}
+
+async function deleteUserById(userId) {
+  const { rowCount } = await pool.query('DELETE FROM users WHERE id = $1', [userId]);
+  return rowCount > 0;
 }
 
 // Sessions
@@ -66,8 +108,13 @@ async function getBackingTrackBySession(sessionId) {
 }
 
 module.exports = {
+  ensureUserProfileColumns,
   createUser,
   findUserByEmail,
+  findUserById,
+  updateUserProfile,
+  updateUserPassword,
+  deleteUserById,
   createSession,
   getSessionsByUser,
   getSessionById,

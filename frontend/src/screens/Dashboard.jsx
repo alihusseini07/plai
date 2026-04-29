@@ -1,25 +1,17 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import AccountMenu from '@/components/AccountMenu';
 import AppHeader from '@/components/AppHeader';
+import pianoImage from '../../../assets/piano.png';
+import drumsImage from '../../../assets/drums.png';
 
 export default function Dashboard() {
   const navigate = useNavigate();
 
-  function handleLogout() {
-    localStorage.removeItem('plai_token');
-    navigate('/');
-  }
-
   return (
     <div className="flex flex-col min-h-screen bg-neutral-950 text-white">
       <AppHeader>
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="h-8 px-3 rounded-md text-sm font-medium text-neutral-300 hover:text-white hover:bg-neutral-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
-        >
-          Log out
-        </button>
+        <AccountMenu />
       </AppHeader>
 
       <main className="flex-1 px-6 py-12 sm:py-14">
@@ -39,15 +31,13 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <InstrumentCard
                 label="Piano"
-                description="Fingertip y-position triggers chromatic notes across 14 zones."
                 onClick={() => navigate('/play/piano')}
-                glyph={<PianoGlyph />}
+                imageSrc={pianoImage}
               />
               <InstrumentCard
                 label="Drums"
-                description="Fast downward wrist velocity triggers percussion hits."
                 onClick={() => navigate('/play/drums')}
-                glyph={<DrumGlyph />}
+                imageSrc={drumsImage}
               />
             </div>
           </section>
@@ -80,46 +70,30 @@ export default function Dashboard() {
   );
 }
 
-function InstrumentCard({ label, description, glyph, onClick }) {
+function InstrumentCard({ label, imageSrc, onClick }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={`Start ${label} session`}
-      className="group relative flex flex-col gap-6 p-6 h-48 rounded-xl border border-neutral-800 bg-neutral-900 text-left transition-colors hover:border-neutral-600 hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
+      className="group relative flex h-64 flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 text-left transition-colors hover:border-neutral-600 hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
     >
-      <div className="flex items-start justify-between">
-        <div className="w-10 h-10 rounded-md border border-neutral-800 bg-neutral-950 flex items-center justify-center text-blue-400">
-          {glyph}
-        </div>
-        <svg viewBox="0 0 20 20" fill="none" className="w-4 h-4 text-neutral-500 group-hover:text-white transition-colors" aria-hidden="true">
+      <div className="relative flex-1 overflow-hidden border-b border-neutral-800 bg-neutral-950">
+        <img
+          src={imageSrc}
+          alt=""
+          aria-hidden="true"
+          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/15 to-transparent" />
+        <svg viewBox="0 0 20 20" fill="none" className="absolute right-5 top-5 h-4 w-4 text-neutral-300 group-hover:text-white transition-colors" aria-hidden="true">
           <path d="M7 5h8v8M7 13l8-8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </div>
 
-      <div className="mt-auto space-y-1">
+      <div className="p-5">
         <p className="text-lg font-semibold text-white">{label}</p>
-        <p className="text-sm text-neutral-400 leading-relaxed">{description}</p>
       </div>
     </button>
-  );
-}
-
-function PianoGlyph() {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5" aria-hidden="true">
-      <rect x="3" y="4" width="14" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M7 4v8M10 4v8M13 4v8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function DrumGlyph() {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5" aria-hidden="true">
-      <ellipse cx="10" cy="6" rx="6" ry="2" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M4 6v8c0 1.1 2.7 2 6 2s6-.9 6-2V6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M14 4l2-2M6 4L4 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
   );
 }

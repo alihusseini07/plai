@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BrandWordmark from '@/components/BrandWordmark';
+import { storeAuthSession } from '@/lib/account';
 
 export default function AuthScreen() {
   const navigate = useNavigate();
   const [mode, setMode] = useState('login');
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -17,7 +20,7 @@ export default function AuthScreen() {
       const res = await fetch(`/api/auth/${mode === 'signup' ? 'register' : 'login'}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
       });
       if (!res.ok) {
         // Backend is reachable — show its error, never fall through to mock.
@@ -26,13 +29,13 @@ export default function AuthScreen() {
         return;
       }
       const data = await res.json();
-      localStorage.setItem('plai_token', data.token);
+      storeAuthSession(data.token, data.user || { name, email });
       navigate('/dashboard');
     } catch {
       // TEMPORARY MOCK — remove once backend auth is stable.
       // Only reaches here when fetch itself throws (backend unreachable).
       // A real error response from the backend exits above via the !res.ok branch.
-      localStorage.setItem('plai_token', 'mock_token_dev');
+      storeAuthSession('mock_token_dev', { name: name || email.split('@')[0], email });
       navigate('/dashboard');
       // END TEMPORARY MOCK
     } finally {
@@ -45,10 +48,7 @@ export default function AuthScreen() {
       <div className="w-full max-w-sm">
         {/* Wordmark */}
         <div className="flex flex-col items-center gap-3 mb-8">
-          <div className="flex items-center gap-2">
-            <span aria-hidden="true" className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-            <span className="text-2xl font-semibold tracking-tight text-white">plai</span>
-          </div>
+          <BrandWordmark logoClassName="h-14 w-auto" />
           <p className="text-sm text-neutral-400">play music with your hands</p>
         </div>
 
@@ -76,6 +76,17 @@ export default function AuthScreen() {
           </div>
 
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
+            {mode === 'signup' && (
+              <Field
+                id="name"
+                label="Name"
+                type="text"
+                placeholder="Your name"
+                value={name}
+                onChange={setName}
+                autoComplete="name"
+              />
+            )}
             <Field
               id="email"
               label="Email"
@@ -97,7 +108,7 @@ export default function AuthScreen() {
 
             <button
               type="submit"
-              disabled={loading || !email || !password}
+              disabled={loading || !email || !password || (mode === 'signup' && !name)}
               className="w-full h-10 rounded-md bg-blue-500 text-white text-sm font-medium hover:bg-blue-400 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 disabled:bg-neutral-700 disabled:text-neutral-400 disabled:cursor-not-allowed"
             >
               {loading ? 'Loading…' : mode === 'signup' ? 'Create account' : 'Log in'}
