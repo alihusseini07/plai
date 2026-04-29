@@ -1,3 +1,3 @@
 # plai
 
-bridging the gap between talent and accessibility 
+bridging the gap between talent and accessibility
