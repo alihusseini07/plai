@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Routes, Route, Navigate, useParams } from 'react-router-dom';
 import AuthScreen from './screens/AuthScreen.jsx';
+import AccountScreen from './screens/AccountScreen.jsx';
 import Dashboard from './screens/Dashboard.jsx';
+import AccountMenu from './components/AccountMenu.jsx';
 import AppHeader from './components/AppHeader.jsx';
 import Stage from './components/Stage.jsx';
 import SessionPanel from './components/SessionPanel.jsx';
@@ -35,7 +37,9 @@ function PlayScreen() {
 
   return (
     <div className="flex flex-col min-h-screen bg-neutral-950 text-white">
-      <AppHeader backTo="/dashboard" />
+      <AppHeader backTo="/dashboard">
+        <AccountMenu />
+      </AppHeader>
 
       {!started ? (
         <main className="flex-1 flex flex-col items-center justify-center gap-8 px-6 py-16">
@@ -85,6 +89,22 @@ export default function App() {
         element={
           <RequireAuth>
             <PlayScreen />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <RequireAuth>
+            <AccountScreen section="profile" />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <RequireAuth>
+            <AccountScreen section="settings" />
           </RequireAuth>
         }
       />

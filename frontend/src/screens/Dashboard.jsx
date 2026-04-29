@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import AccountMenu from '@/components/AccountMenu';
 import AppHeader from '@/components/AppHeader';
 import pianoImage from '../../../assets/piano.png';
 import drumsImage from '../../../assets/drums.png';
@@ -7,21 +8,10 @@ import drumsImage from '../../../assets/drums.png';
 export default function Dashboard() {
   const navigate = useNavigate();
 
-  function handleLogout() {
-    localStorage.removeItem('plai_token');
-    navigate('/');
-  }
-
   return (
     <div className="flex flex-col min-h-screen bg-neutral-950 text-white">
       <AppHeader>
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="h-8 px-3 rounded-md text-sm font-medium text-neutral-300 hover:text-white hover:bg-neutral-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
-        >
-          Log out
-        </button>
+        <AccountMenu />
       </AppHeader>
 
       <main className="flex-1 px-6 py-12 sm:py-14">
