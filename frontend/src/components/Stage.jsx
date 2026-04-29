@@ -6,8 +6,9 @@ import PianoKeyboard from './PianoKeyboard.jsx';
 import { processPianoFrame } from '../instruments/piano.js';
 import { processDrumFrame, getDrumZones } from '../instruments/drums.js';
 
-const WIDTH = 640;
-const HEIGHT = 480;
+/** Video / gesture canvas — compact strip above the piano */
+const WIDTH = 400;
+const HEIGHT = 300;
 
 export default function Stage({ instrument }) {
   const videoRef = useRef(null);
@@ -40,8 +41,8 @@ export default function Stage({ instrument }) {
   }, [runInstrumentFrame]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
-      <div style={{ position: 'relative', width: WIDTH, height: HEIGHT, margin: '16px auto 0' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, width: '100%' }}>
+      <div style={{ position: 'relative', width: WIDTH, height: HEIGHT, margin: '12px auto 0', borderRadius: 12, overflow: 'hidden', boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}>
         <video
           ref={videoRef}
           style={{
@@ -63,8 +64,8 @@ export default function Stage({ instrument }) {
           instrument={instrument}
           zones={zones}
         />
-        <div style={{ position: 'absolute', bottom: 8, right: 8, fontSize: 12, color: '#aaa' }}>
-          confidence: {(confidence * 100).toFixed(0)}%
+        <div style={{ position: 'absolute', bottom: 8, right: 8, fontSize: 11, color: '#eee', background: 'rgba(0,0,0,0.45)', padding: '4px 8px', borderRadius: 6 }}>
+          {(confidence * 100).toFixed(0)}%
         </div>
       </div>
 

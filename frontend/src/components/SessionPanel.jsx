@@ -44,9 +44,9 @@ export default function SessionPanel({ instrument }) {
   }
 
   return (
-    <div style={{ width: 640, margin: '16px auto', padding: 16, background: '#111', borderRadius: 8 }}>
+    <div style={{ width: 'min(640px, calc(100vw - 32px))', margin: '16px auto', padding: 16, background: '#f5f5f5', borderRadius: 8, border: '1px solid #e8e8e8' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ color: '#aaa', fontSize: 14 }}>Session</span>
+        <span style={{ color: '#444', fontSize: 14 }}>Session</span>
         <button
           onClick={handleSave}
           disabled={saving || streaming || !token}
@@ -57,11 +57,11 @@ export default function SessionPanel({ instrument }) {
       </div>
 
       {!token && (
-        <p style={{ color: '#f87', fontSize: 13, marginTop: 8 }}>Log in to save sessions.</p>
+        <p style={{ color: '#c53', fontSize: 13, marginTop: 8 }}>Log in to save sessions.</p>
       )}
 
       {(backingTrack || streaming) && (
-        <div style={{ marginTop: 16, padding: 12, background: '#1a1a2e', borderRadius: 6, fontSize: 14, lineHeight: 1.6, color: '#ccc' }}>
+        <div style={{ marginTop: 16, padding: 12, background: '#ffffff', borderRadius: 6, fontSize: 14, lineHeight: 1.6, color: '#333', border: '1px solid #e0e0e0' }}>
           <strong style={{ color: '#6c63ff' }}>AI Backing Track:</strong>
           <p style={{ marginTop: 8, whiteSpace: 'pre-wrap' }}>
             {backingTrack}

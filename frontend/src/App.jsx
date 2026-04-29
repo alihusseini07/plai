@@ -14,8 +14,8 @@ export default function App() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh', background: '#0a0a0a', color: '#fff', fontFamily: 'sans-serif' }}>
-      <h1 style={{ margin: '24px 0 8px' }}>plai</h1>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh', background: '#ffffff', color: '#1a1a1a', fontFamily: 'system-ui, sans-serif' }}>
+      <h1 style={{ margin: '24px 0 8px', fontWeight: 600 }}>plai</h1>
       {!started ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, marginTop: 48 }}>
           <InstrumentSelector instrument={instrument} onChange={setInstrument} />
