@@ -1,10 +1,19 @@
 import React, { useState } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import AuthScreen from './screens/AuthScreen.jsx';
+import Dashboard from './screens/Dashboard.jsx';
 import InstrumentSelector from './components/InstrumentSelector.jsx';
 import Stage from './components/Stage.jsx';
 import SessionPanel from './components/SessionPanel.jsx';
 import { initAudio } from './engine/audioEngine.js';
 
-export default function App() {
+function RequireAuth({ children }) {
+  const token = localStorage.getItem('plai_token');
+  if (!token) return <Navigate to="/" replace />;
+  return children;
+}
+
+function PlayScreen() {
   const [instrument, setInstrument] = useState('piano');
   const [started, setStarted] = useState(false);
   const [audioLoading, setAudioLoading] = useState(false);
@@ -53,5 +62,30 @@ export default function App() {
         </>
       )}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<AuthScreen />} />
+      <Route
+        path="/dashboard"
+        element={
+          <RequireAuth>
+            <Dashboard />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/play/:instrument"
+        element={
+          <RequireAuth>
+            <PlayScreen />
+          </RequireAuth>
+        }
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
