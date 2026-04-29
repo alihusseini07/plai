@@ -7,25 +7,32 @@ const INSTRUMENTS = [
 
 export default function InstrumentSelector({ instrument, onChange }) {
   return (
-    <div style={{ display: 'flex', gap: 16 }}>
-      {INSTRUMENTS.map(ins => (
-        <button
-          key={ins.id}
-          onClick={() => onChange(ins.id)}
-          style={{
-            padding: '16px 24px',
-            borderRadius: 8,
-            border: `2px solid ${instrument === ins.id ? '#6c63ff' : '#d0d0d0'}`,
-            background: instrument === ins.id ? '#f3f1ff' : '#ffffff',
-            color: '#1a1a1a',
-            cursor: 'pointer',
-            textAlign: 'left',
-          }}
-        >
-          <div style={{ fontWeight: 700, fontSize: 18 }}>{ins.label}</div>
-          <div style={{ fontSize: 12, color: '#555', marginTop: 4 }}>{ins.description}</div>
-        </button>
-      ))}
+    <div
+      role="radiogroup"
+      aria-label="Choose instrument"
+      className="grid grid-cols-2 gap-3 w-full max-w-md"
+    >
+      {INSTRUMENTS.map((ins) => {
+        const selected = instrument === ins.id;
+        return (
+          <button
+            key={ins.id}
+            type="button"
+            role="radio"
+            aria-checked={selected}
+            onClick={() => onChange(ins.id)}
+            className={
+              'flex flex-col gap-1 p-4 rounded-lg border text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 ' +
+              (selected
+                ? 'border-blue-500 bg-neutral-900 text-white'
+                : 'border-neutral-800 bg-neutral-900 text-white hover:border-neutral-600')
+            }
+          >
+            <span className="text-sm font-semibold">{ins.label}</span>
+            <span className="text-xs text-neutral-400">{ins.description}</span>
+          </button>
+        );
+      })}
     </div>
   );
 }
