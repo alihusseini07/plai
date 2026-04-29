@@ -39,6 +39,7 @@ export default function AccountScreen({ section = 'profile' }) {
 
   useEffect(() => {
     let active = true;
+    const fallbackUser = getStoredUser();
 
     fetchCurrentUser()
       .then((nextUser) => {
@@ -51,6 +52,19 @@ export default function AccountScreen({ section = 'profile' }) {
         });
       })
       .catch(() => {
+        if (!active) return;
+
+        if (fallbackUser) {
+          setUser(fallbackUser);
+          setProfileForm({
+            name: fallbackUser.name || '',
+            email: fallbackUser.email || '',
+            avatarDataUrl: fallbackUser.avatarDataUrl || null,
+          });
+          setProfileStatus('Profile details are using local data until the backend account route responds.');
+          return;
+        }
+
         clearAuthSession();
         navigate('/', { replace: true });
       })

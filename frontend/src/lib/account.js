@@ -80,9 +80,23 @@ async function jsonRequest(path, options = {}) {
     },
   });
 
-  const data = await res.json().catch(() => ({}));
+  const rawText = await res.text();
+  let data = {};
+
+  if (rawText) {
+    try {
+      data = JSON.parse(rawText);
+    } catch {
+      data = { error: rawText.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() };
+    }
+  }
+
   if (!res.ok) {
-    throw new Error(data.error || 'Request failed');
+    const message = data.error || 'Request failed';
+    if (message.includes('Cannot PATCH /api/auth/me') || message.includes('Cannot GET /api/auth/me')) {
+      throw new Error('Profile API unavailable. Restart the backend server.');
+    }
+    throw new Error(message);
   }
   return data;
 }

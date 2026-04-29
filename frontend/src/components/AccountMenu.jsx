@@ -11,14 +11,21 @@ export default function AccountMenu() {
 
   useEffect(() => {
     let active = true;
+    const fallbackUser = getStoredUser();
 
     fetchCurrentUser()
       .then((nextUser) => {
         if (active) setUser(nextUser);
       })
       .catch(() => {
-        clearAuthSession();
-        navigate('/', { replace: true });
+        if (!active) return;
+
+        if (fallbackUser) {
+          setUser(fallbackUser);
+          return;
+        }
+
+        setUser({ name: 'User', email: '' });
       });
 
     return () => {
