@@ -1,11 +1,11 @@
 import { useRef, useCallback } from 'react';
-import { playNote, playDrumHit, playNoteUi, midiToFreq } from '../engine/audioEngine.js';
+import { playPianoMidi, playPianoMidiUi, playDrumHit } from '../engine/audioEngine.js';
 
 export default function useAudio() {
   const noteEventsRef = useRef([]);
 
-  const triggerNote = useCallback((midi, fingerSlot = 0, noteName = '') => {
-    const triggered = playNote(midiToFreq(midi), 0.6, fingerSlot, 'triangle');
+  const triggerNote = useCallback(async (midi, fingerSlot = 0, noteName = '') => {
+    const triggered = await playPianoMidi(midi, fingerSlot, 0.95);
     if (triggered) {
       noteEventsRef.current.push({
         type: 'note',
@@ -37,16 +37,18 @@ export default function useAudio() {
     return events;
   }, []);
 
-  /** Mouse / react-piano clicks — separate cooldown from hand slots. */
-  const playUiPianoKey = useCallback((midiNumber) => {
-    playNoteUi(midiToFreq(midiNumber), 0.35, 'triangle');
-    noteEventsRef.current.push({
-      type: 'note',
-      midi: midiNumber,
-      note: '',
-      timestamp: Date.now(),
-      fingerSlot: -1,
-    });
+  /** Mouse / react-piano clicks */
+  const playUiPianoKey = useCallback(async (midiNumber) => {
+    const ok = await playPianoMidiUi(midiNumber, 0.55);
+    if (ok) {
+      noteEventsRef.current.push({
+        type: 'note',
+        midi: midiNumber,
+        note: '',
+        timestamp: Date.now(),
+        fingerSlot: -1,
+      });
+    }
   }, []);
 
   const stopUiPianoKey = useCallback(() => {}, []);
