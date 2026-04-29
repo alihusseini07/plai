@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import BrandWordmark from './BrandWordmark.jsx';
 
 export default function AppHeader({ backTo, children }) {
   return (
@@ -21,8 +22,7 @@ export default function AppHeader({ backTo, children }) {
           className="flex items-center gap-2 text-white hover:text-neutral-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 rounded-sm"
           aria-label="plai — go to dashboard"
         >
-          <span aria-hidden="true" className="w-2 h-2 rounded-full bg-blue-500" />
-          <span className="text-base font-semibold tracking-tight">plai</span>
+          <BrandWordmark />
         </Link>
       </div>
 
