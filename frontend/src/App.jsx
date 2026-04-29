@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useParams } from 'react-router-dom';
 import AuthScreen from './screens/AuthScreen.jsx';
 import Dashboard from './screens/Dashboard.jsx';
 import AppHeader from './components/AppHeader.jsx';
-import InstrumentSelector from './components/InstrumentSelector.jsx';
 import Stage from './components/Stage.jsx';
 import SessionPanel from './components/SessionPanel.jsx';
 import { initAudio } from './engine/audioEngine.js';
@@ -15,9 +14,11 @@ function RequireAuth({ children }) {
 }
 
 function PlayScreen() {
-  const [instrument, setInstrument] = useState('piano');
+  const { instrument: routeInstrument } = useParams();
   const [started, setStarted] = useState(false);
   const [audioLoading, setAudioLoading] = useState(false);
+  const instrument = routeInstrument === 'drums' ? 'drums' : 'piano';
+  const instrumentLabel = instrument === 'drums' ? 'Drums' : 'Piano';
 
   async function handleStart() {
     setAudioLoading(true);
@@ -40,14 +41,12 @@ function PlayScreen() {
         <main className="flex-1 flex flex-col items-center justify-center gap-8 px-6 py-16">
           <div className="flex flex-col items-center gap-2 text-center">
             <h1 className="text-3xl font-semibold tracking-tight text-white">
-              Pick an instrument
+              {instrumentLabel} session
             </h1>
             <p className="text-sm text-neutral-400 max-w-sm">
               Camera access starts when you launch the session.
             </p>
           </div>
-
-          <InstrumentSelector instrument={instrument} onChange={setInstrument} />
 
           <button
             type="button"
