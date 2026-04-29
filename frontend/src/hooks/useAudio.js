@@ -1,5 +1,5 @@
 import { useRef, useCallback } from 'react';
-import { playNote, playDrumHit, midiToFreq } from '../engine/audioEngine.js';
+import { playNote, playDrumHit, playNoteUi, midiToFreq } from '../engine/audioEngine.js';
 
 export default function useAudio() {
   const noteEventsRef = useRef([]);
@@ -37,5 +37,19 @@ export default function useAudio() {
     return events;
   }, []);
 
-  return { triggerNote, triggerDrum, flushEvents };
+  /** Mouse / react-piano clicks — separate cooldown from hand slots. */
+  const playUiPianoKey = useCallback((midiNumber) => {
+    playNoteUi(midiToFreq(midiNumber), 0.35, 'triangle');
+    noteEventsRef.current.push({
+      type: 'note',
+      midi: midiNumber,
+      note: '',
+      timestamp: Date.now(),
+      fingerSlot: -1,
+    });
+  }, []);
+
+  const stopUiPianoKey = useCallback(() => {}, []);
+
+  return { triggerNote, triggerDrum, flushEvents, playUiPianoKey, stopUiPianoKey };
 }

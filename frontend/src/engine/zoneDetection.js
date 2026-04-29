@@ -36,36 +36,48 @@ export function checkZoneHit(coord, zones) {
   return null;
 }
 
-// Piano keyboard layout constants.
-const PIANO_KEY_COUNT = 14;
+// Piano: full 88-key range A0–C8 (matches react-piano default range).
+export const PIANO_NOTE_RANGE = { first: 21, last: 108 };
+
+const PIANO_LABELS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
 const PIANO_ZONE_HEIGHT = 80;
 
-// C major scale MIDI notes starting at C4 (60), 14 keys = C4 to D5.
-const PIANO_MIDI_NOTES = [60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79, 81, 83];
-
-const NOTE_NAMES = ['C4','D4','E4','F4','G4','A4','B4','C5','D5','E5','F5','G5','A5','B5'];
+/** @param {number} midi 0–127 */
+function midiToLabel(midi) {
+  const octave = Math.floor(midi / 12) - 1;
+  return `${PIANO_LABELS[midi % 12]}${octave}`;
+}
 
 /**
- * Build piano zone rectangles for the given canvas dimensions.
- * Zones span the full canvas width, distributed evenly, anchored at the bottom.
+ * Hit zones for camera: equal-width chromatic strips along the bottom of the video.
+ * (Visual keyboard is react-piano; highlights use the same MIDI numbers.)
  *
  * @param {number} canvasWidth
  * @param {number} canvasHeight
  * @returns {Array<{ x, y, width, height, id, midi, note }>}
  */
 export function buildPianoZones(canvasWidth, canvasHeight) {
-  const keyWidth = canvasWidth / PIANO_KEY_COUNT;
+  const { first, last } = PIANO_NOTE_RANGE;
+  const count = last - first + 1;
+  const keyWidth = canvasWidth / count;
   const zoneY = canvasHeight - PIANO_ZONE_HEIGHT;
 
-  return Array.from({ length: PIANO_KEY_COUNT }, (_, i) => ({
-    id: `piano_${i}`,
-    x: i * keyWidth,
-    y: zoneY,
-    width: keyWidth,
-    height: PIANO_ZONE_HEIGHT,
-    midi: PIANO_MIDI_NOTES[i],
-    note: NOTE_NAMES[i],
-  }));
+  /** @type {Array<{ x, y, width, height, id, midi, note }>} */
+  const zones = [];
+  for (let m = first; m <= last; m++) {
+    const i = m - first;
+    zones.push({
+      id: `piano_${m}`,
+      x: i * keyWidth,
+      y: zoneY,
+      width: keyWidth,
+      height: PIANO_ZONE_HEIGHT,
+      midi: m,
+      note: midiToLabel(m),
+    });
+  }
+  return zones;
 }
 
 /**

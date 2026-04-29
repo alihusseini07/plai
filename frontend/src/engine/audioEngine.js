@@ -18,7 +18,8 @@ export function getAudioContext() {
 // MediaPipe finger tip indices: 4, 8, 12, 16, 20 (right hand) + same for left.
 // We map them to slots 0-9 by: slot = fingerIndex < 5 ? fingerIndex : fingerIndex - 5 + 5.
 // Callers pass a slotIndex 0-9 directly.
-const lastTriggerTime = new Array(10).fill(0);
+// Slots 0–9: fingertips; 15: mouse / react-piano UI (see useAudio).
+const lastTriggerTime = new Array(16).fill(0);
 const COOLDOWN_MS = 200;
 
 /**
@@ -32,9 +33,10 @@ const COOLDOWN_MS = 200;
 export function playNote(frequency, duration = 0.5, fingerSlot = 0, type = 'sine') {
   if (!audioCtx) return false;
 
+  const slot = Math.min(15, Math.max(0, fingerSlot));
   const now = performance.now();
-  if (now - lastTriggerTime[fingerSlot] < COOLDOWN_MS) return false;
-  lastTriggerTime[fingerSlot] = now;
+  if (now - lastTriggerTime[slot] < COOLDOWN_MS) return false;
+  lastTriggerTime[slot] = now;
 
   const t = audioCtx.currentTime;
   const osc = audioCtx.createOscillator();
@@ -57,6 +59,31 @@ export function playNote(frequency, duration = 0.5, fingerSlot = 0, type = 'sine
   osc.start(t);
   osc.stop(t + duration);
 
+  return true;
+}
+
+/** Cooldown bypass for mouse-driven react-piano (short staccato clicks). */
+const UI_COOLDOWN_MS = 80;
+
+export function playNoteUi(frequency, duration = 0.35, type = 'triangle') {
+  if (!audioCtx) return false;
+  const slot = 15;
+  const now = performance.now();
+  if (now - lastTriggerTime[slot] < UI_COOLDOWN_MS) return false;
+  lastTriggerTime[slot] = now;
+
+  const t = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(frequency, t);
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.exponentialRampToValueAtTime(0.45, t + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(t);
+  osc.stop(t + duration);
   return true;
 }
 
