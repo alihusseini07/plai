@@ -2,6 +2,8 @@
 
 Browser-based app where hand gestures tracked via webcam play virtual instruments in real time. Two instruments: piano (fingertip y-position triggers notes) and drums (fast downward wrist velocity triggers hits). After a session, the note sequence is sent to Claude which generates a complementary backing track description via streaming. Sessions are stored in PostgreSQL.
 
+PostgreSQL is currently hosted on Railway. The backend connects through `DATABASE_URL` from Railway rather than a local `plai_dev` database.
+
 ## How to run
 
 ```bash
@@ -21,6 +23,16 @@ Apply the DB schema once:
 ```bash
 psql $DATABASE_URL -f backend/db/schema.sql
 ```
+
+If `psql` is not available locally, run the contents of `backend/db/schema.sql` in the Railway Postgres SQL editor instead.
+
+## Railway database setup
+
+- Create or use the Railway Postgres service for this project.
+- Run `backend/db/schema.sql` against that Railway database.
+- Set the backend service `DATABASE_URL` to the Railway Postgres connection string.
+- Set `JWT_SECRET`, `FRONTEND_URL`, and `ANTHROPIC_API_KEY` in Railway for deployed environments.
+- After schema or env var changes, redeploy the backend service if needed.
 
 ## How to verify changes
 
